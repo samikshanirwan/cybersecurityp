@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>StegoLab – Steganography Multi-Test Tool</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body><div class="wrap">
+<header>
+<div class="bar"><div class="brand"><svg width="32" height="32" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="7" fill="var(--ac)"/><g fill="#fff" opacity=".9"><rect x="6" y="6" width="5" height="5" rx="1"/><rect x="12.5" y="6" width="5" height="5" rx="1"/><rect x="19" y="6" width="5" height="5" rx="1"/><rect x="6" y="12.5" width="5" height="5" rx="1"/><rect x="19" y="12.5" width="5" height="5" rx="1"/><rect x="6" y="19" width="5" height="5" rx="1"/><rect x="12.5" y="19" width="5" height="5" rx="1"/><rect x="19" y="19" width="5" height="5" rx="1"/></g><rect x="12.5" y="12.5" width="5" height="5" rx="1" fill="var(--hid)"/></svg><div><b>StegoLab</b><small>Cyber Security Lab</small></div></div><div class="bar-r"><span class="pill">Local processing, no uploads</span><button class="pill" aria-label="Toggle light or dark theme" onclick="const r=document.documentElement;r.dataset.theme=(r.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'))==='dark'?'light':'dark'">Theme</button></div></div>
+<h1>Steganography analysis suite</h1>
+<p class="sub">Embed, recover and detect hidden data using four standard techniques: LSB replacement, zero-width Unicode, statistical analysis and file-trailer inspection. All processing happens in your browser.</p>
+<div class="bytes" aria-label="Example: the last bit of each pixel byte carries the secret"><span>1011010<i>1</i></span><span>0110001<i>0</i></span><span>1100110<i>1</i></span><span>0011101<i>1</i></span><span>1001010<i>0</i></span><span class="note" style="border:0;background:none;align-self:center">the red bit is the hidden one</span></div>
+</header>
+<nav role="tablist">
+<button class="tab on" data-p="p1">Hide in image</button>
+<button class="tab" data-p="p2">Extract from image</button>
+<button class="tab" data-p="p3">Invisible text</button>
+<button class="tab" data-p="p4">Detect &amp; analyze</button>
+</nav>
+
+<section class="panel grid" id="p1">
+<div class="card"><h2>Cover image and message</h2>
+<label class="dz" id="dz1"><input type="file" accept="image/*" hidden><span>🖼️</span><b>Drop a cover image or tap to browse</b></label>
+<label class="f" for="e-msg">Secret message</label>
+<textarea id="e-msg" placeholder="Type the text you want to hide"></textarea>
+<div class="row"><div><label class="f" for="e-pw">Password for your recipient (optional)</label><input type="password" id="e-pw" autocomplete="off"></div>
+<div><label class="f" for="e-n">Bits per channel</label><select id="e-n"><option value="1">1 (least visible)</option><option value="2">2 (more space)</option><option value="3">3 (most space)</option></select></div></div>
+<p class="note" id="e-cap">Load an image to see how much it can hold.</p>
+<button class="btn" id="e-go">Hide message</button>
+<div class="msg" id="e-st"></div></div>
+<div class="card"><h2>Result</h2>
+<div class="pair"><div><p class="note">Original</p><img id="e-prev" alt="Original image" hidden></div><div><p class="note">Stego image</p><canvas id="e-out" width="1" height="1" hidden></canvas></div></div>
+<a class="btn" id="e-dl" hidden>Download PNG</a>
+<p class="note">Always share the PNG. JPEG compression rewrites pixel bits and destroys the message.</p></div>
+</section>
+
+<section class="panel grid" id="p2" hidden>
+<div class="card"><h2>Stego image</h2>
+<label class="dz" id="dz2"><input type="file" accept="image/*" hidden><span>🔍</span><b>Drop the image to read</b></label>
+<label class="f" for="x-pw">Password (if one was used)</label><input type="password" id="x-pw" autocomplete="off">
+<button class="btn" id="x-go">Extract message</button>
+<div class="msg" id="x-st"></div></div>
+<div class="card"><h2>Recovered message</h2>
+<textarea id="x-out" readonly placeholder="The hidden text appears here"></textarea>
+<img id="x-prev" alt="Stego image preview" hidden></div>
+</section>
+
+<section class="panel grid" id="p3" hidden>
+<div class="card"><h2>Hide text inside text</h2>
+<label class="f" for="t-cover">Cover text (what people will see)</label>
+<textarea id="t-cover" placeholder="Meeting moved to 5 PM, see you there.">Meeting moved to 5 PM, see you there.</textarea>
+<label class="f" for="t-sec">Secret</label>
+<textarea id="t-sec" placeholder="Hidden words"></textarea>
+<button class="btn" id="t-enc">Hide secret</button>
+<label class="f" for="t-out">Output (looks identical to the cover)</label>
+<textarea id="t-out" readonly></textarea>
+<button class="btn alt" id="t-cp" style="margin:8px 0 0">Copy output</button>
+<div class="msg" id="t-st"></div></div>
+<div class="card"><h2>Reveal hidden text</h2>
+<label class="f" for="t-in">Paste suspicious text</label>
+<textarea id="t-in"></textarea>
+<button class="btn" id="t-dec">Scan and reveal</button>
+<ul class="res" id="t-res"></ul></div>
+</section>
+
+<section class="panel" id="p4" hidden>
+<div class="grid"><div class="card"><h2>Suspect image</h2>
+<label class="dz" id="dz3"><input type="file" accept="image/*" hidden><span>🧪</span><b>Drop an image to test</b></label>
+<ul class="res" id="a-res"></ul></div>
+<div class="card"><h2>LSB plane</h2><p class="note">Each pixel shows only its lowest bit. Natural pictures show faint structure; hidden data shows up as random noise.</p>
+<canvas id="a-plane" width="1" height="1" hidden></canvas></div></div>
+</section>
+
+<footer><button class="btn alt" id="selftest" style="margin:0">Run self-test</button> <span id="st-out" class="note"></span>
+<p>Method: LSB replacement writes a 4-byte tag (STG1), a 4-byte length, then the message into the lowest bits of the red, green and blue values. A password encrypts the message with AES-256-GCM (key derived by PBKDF2), so only someone who knows it can read the message.</p><p>Use only on files you own or are authorised to test.</p></footer>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
